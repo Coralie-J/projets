@@ -1,0 +1,148 @@
+def pion_adverse(joueur):
+	if joueur==1 or joueur==2
+                if joueur==1:
+                        return 2
+                else:
+                        return 1
+        else:
+                print("Erreur, le joueur ne peut être 1 ou 2")
+	#Retourne le joueur adverse
+
+
+def prise_possible_direction(p,i,j,vertical,horizontal,joueur):
+        if not(vertical==-1 and horizontal==1) and not (vertical==1 and horizontal==-1):
+                if case_valide(plateau,i+vertical,j+horizontal) and get_case(plateau,i+vertical,j+horizontal)==pion_adverse(joueur):
+                    x=i+2*vertical
+                    y=j+2*horizontal
+                    if get_case(plateau,x,y)==0 or get_case(plateau,x,y)==pion_adverse(joueur):
+                        return False
+                    elif get_case(plateau,x,y)==joueur:
+                        return True
+                return False
+        else:
+                if case_valide(plateau,i-vertical,j-horizontal) and get_case(plateau,i-vertical,j-horizontal)==pion_adverse(joueur):
+                    x=i-2*vertical
+                    y=j-2*horizontal
+                    if get_case(plateau,x,y)==0:
+                        return False
+                    elif get_case(plateau,x,y)==joueur:
+                            return True
+                return False
+
+        # Ce programme sert à déterminer si le joueur qui place son pion dans la case d'indice (i,j) retourne le pion de son adversaire 
+
+
+        
+def mouvement_valide(plateau,i,j,joueur):
+        v=-1
+        while v<2:
+                h=-1
+                test=prise_possible_direction(plateau,i,j,v,h,joueur)
+                while h<2:
+                        if test:
+                                return True
+                        h+=1
+                v+=1
+        return False
+
+#Retourne True si le joueur peut poser son pion à la case (i,j)
+
+
+
+def mouvement_direction(plateau,i,j,vertical,horizontal,joueur):
+    assert case_valide(plateau,i,j) and (vertical>-2 and vertical<2) and (horizontal<2 and horizontal>-2)
+    if prise_possible_direction(plateau,i,j,vertical,horizontal,joueur):
+        pion_retourne=((i+vertical)*plateau["n"])+(j+horizontal)
+        if (vertical==-1 and horizontal==1) or (vertical==1 and horizontal==-1):
+            pion_retourne=(i-vertical)*p["n"]+(j-horizontal)
+        
+        if joueur==1:
+            plateau["cases"][pion_retourne]=1
+        else:
+            plateau["cases"][pion_retourne]=2
+        return plateau["cases"][pion_retourne]
+    
+    
+    
+    
+# Met à jour le plateau quand le joueur place son pion
+
+
+def mouvement(plateau,i,j,joueur):
+    v=-1
+    while v<2:
+        h=-1
+        while h<2:
+            if prise_possible_direction(plateau,i,j,v,h,joueur):
+                pion_joue=(i*plateau["n"])+j
+                mouvement_direction(plateau,i,j,v,h,joueur)
+                plateau["cases"][pion_joue]=joueur
+                return affiche_plateau(plateau) 
+            h+=1
+        v+=1
+    return affiche_plateau(plateau) 
+    
+#Met à jour le plateau lorsqu'un joueur mange un pion de son adversaire           
+        
+
+
+def joueur_peut_jouer(plateau,joueur):
+        # Indique True si le joueur peut jouer
+        i=0
+        while i<plateau["n"]:
+                j=0
+                case=(i*plateau["n"])+j
+                while j<plateau["n"]:
+                    if mouvement_valide(plateau,i,j,joueur):
+                        return True
+                    j+=1
+                i+=1
+        return False
+    
+
+
+def fin_de_partie(plateau,joueur):
+        if not(joueur_peut_jouer(plateau,1) and (joueur_peut_jouer(plateau,2)):
+                return True
+        else:
+                return False
+
+#Retourne True si la partie est terminée
+
+def get_case(plateau,i,j):
+    assert case_valide(plateau,i,j)
+    dim=plateau["n"]
+    return plateau["cases"][(i*dim)+j]
+    
+    
+def set_case(plateau,i,j,val):
+    assert case_valide(plateau,i,j) and (val==1 or val==2 or val==0)
+    choix=(i*plateau["n"])+j
+    tab=plateau["cases"]
+    nb_libre=len(tab)-4
+    if tab[choix]==0 and val!=0:
+        nb_libre-=1
+    plateau["cases"][choix]=val
+    print( "Il y a " +  str(nb_libre) + " cases libres.")
+    return plateau
+    
+
+def gagnant(plateau):
+        joueur1=0
+        joueur2=0
+        a=0
+        while a<len(plateau["cases"]):
+                if plateau["cases"][a]==1:
+                    joueur1+=1
+                elif plateau["cases"][a]==2:
+                    joueur2+=1
+                a+=1
+    
+        if joueur1>joueur2:
+                return 1
+        elif joueur2>joueur1:
+                return 2
+        else:
+                return 0
+
+#Retourne 1 si le joueur 1 a gagné, 2 si le joueur 2 a gagné ou 0 si ils sont ex-aequo  
