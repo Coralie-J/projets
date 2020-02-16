@@ -1,0 +1,371 @@
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+public class Partie{
+  private Joueur joueur1;
+  private Joueur joueur2;
+  private Plateau echiquier;
+
+  public Partie(){
+    this.joueur1=new Joueur();
+    this.joueur2=new Joueur();
+    this.echiquier=new Plateau();
+  }
+
+  public Partie(Joueur j1,Joueur j2) throws Exception{
+    if (j1.getCouleur().equals(j2.getCouleur())){
+      throw new Exception("Les 2 joueurs ont des pions de meme couleur");
+    }
+    if (j1.getCouleur().equals("blanc")){
+      this.joueur1=j1;
+      this.joueur2=j2;
+    } else {
+      this.joueur1=j2;
+      this.joueur2=j1;
+    }
+    this.echiquier=new Plateau();
+  }
+
+  public Partie(Partie p){
+    this.joueur1=p.joueur1;
+    this.joueur2=p.joueur2;
+    this.echiquier=p.echiquier;
+  }
+
+
+  public Joueur getJoueur1(){
+    return this.joueur1;
+  }
+
+  public Joueur getJoueur2(){
+    return this.joueur2;
+  }
+
+  public Plateau getEchiquier(){
+    return this.echiquier;
+  }
+
+  public void setJoueur1(Joueur j){
+    this.joueur1=j;
+  }
+
+
+  public void setJoueur2(Joueur j){
+    this.joueur2=j;
+  }
+
+
+  public void setEchiquier(Plateau p){
+    this.echiquier=p;
+  }
+
+  public String menu() throws Exception {
+    System.out.println("Bienvenue dans le menu principal");
+    System.out.println("Tapez S pour sauvegarder votre partie");
+    System.out.println("Tapez C pour reprendre une partie");
+    System.out.println("Tapez R pour (re)commencer une partie");
+    System.out.println("Tapez E a tout moment pour sortir");
+    Scanner input = new Scanner(System.in);
+    String rep=input.nextLine();
+    rep=rep.toUpperCase();
+    while (!(rep.equals("S") || rep.equals("R") || rep.equals("C") || rep.equals("E"))){
+      System.out.println("Erreur de saisie , que voulez-vous faire ?");
+      rep=input.nextLine();
+      rep=rep.toUpperCase();
+    }
+    if (rep.equals("S")){
+      this.sauver("sauver.txt");
+    } else if ( rep.equals("C")){
+      this.charger("sauver.txt");
+    } else if (rep.equals("R")){
+      this.commencerPartie();
+    } else if (rep.equals("E")){
+      System.out.println("Avant de se quitter,voulez-vous sauver votre partie ? o/n");
+      String choix=input.nextLine();
+      while (!(choix.equals("n") || choix.equals("o"))){
+        System.out.println("Erreur de saisie , recommencez");
+        choix=input.nextLine();
+        choix=choix.toLowerCase();
+      }
+      if (choix.toLowerCase().equals("o")){
+        this.sauver("sauver.txt");
+      }
+      System.out.println("Au revoir !");
+  }
+    return rep;
+  }
+
+  public Plateau creerPartie(){
+    int s=0;
+    for (int i=48;i<64;i++){
+      this.echiquier.setCase(i,this.joueur1.getPiece(i-48));
+    }
+    for(int a=15;a>-1;a--){
+      this.echiquier.setCase(a,this.joueur2.getPiece(s));
+      s++;
+    }
+    return this.echiquier;
+  }
+
+  public Joueur getJoueurAdverse(Joueur j){
+    if (j.equals(this.joueur1)){
+      return this.joueur2;
+    }
+    return this.joueur1;
+  }
+
+  public Joueur alternanceCoup(int i){
+    if (i%2==0){
+     System.out.println("C'est au tour des " + this.joueur1.getCouleur()+"s");
+      return this.joueur1;
+    } else {
+      System.out.println("C'est au tour des " + this.joueur2.getCouleur()+"s");
+      return this.joueur2;
+    }
+  }
+
+  public boolean mangeLeroi(Joueur j){
+    Joueur adverse=this.getJoueurAdverse(j);
+    Case roi=this.echiquier.getPosition(adverse.getPiece(12));
+    int i=0;
+    if ( roi.getLigne()!=0) {
+         while(i<16){
+           if (this.echiquier.getPosition(j.getPiece(i)).getLigne()==0){
+             i++;
+           } else{
+                if (j.getPiece(i).mangePionAdverse(roi,this.echiquier)){
+                     return true;
+               }
+            i++;
+           }
+    }
+     return false;
+    }
+    return false;
+  }
+
+
+  public boolean verifierMat(Joueur j){
+    int i=0;
+    Joueur adverse=this.getJoueurAdverse(j);
+    ArrayList <Case> valide=new ArrayList<Case>();
+    while(i<64){
+      if(adverse.getPiece(12).verifierCoupValide(this.echiquier.getCase(i),this.echiquier)){
+        valide.add(this.echiquier.getCase(i));
+      }
+      i++;
+    }
+    int c=0;
+    if (this.mangeLeroi(j)){
+      while(c<valide.size()){
+        boolean test=false;
+        int a=0;
+        while (a<16){
+              if(this.echiquier.getPosition(j.getPiece(a)).getLigne()==0){
+                  a++;
+          } else{
+             if(j.getPiece(a).verifierCoupValide(valide.get(c),this.echiquier)){
+                 c++;
+                 test=true;
+             }
+              a++;
+          }
+          if (c==valide.size()){
+            return test;
+          }
+          }
+         if (test == false){
+          return false;
+        }
+        }
+       //return true;
+      }
+    return false;
+  }
+
+  public boolean verifierPat(Joueur j){
+    int i=0;
+    Joueur adverse=this.getJoueurAdverse(j);
+    ArrayList <Case> valide=new ArrayList<Case>();
+    while(i<64){
+          if(adverse.getPiece(12).verifierCoupValide(this.echiquier.getCase(i),this.echiquier)){
+              valide.add(this.echiquier.getCase(i));
+         }
+          i++;
+        }
+    int c=0;
+    if (! this.mangeLeroi(j)){
+      while(c<valide.size()){
+        boolean test=false;
+        int a=0;
+        while (a<16){
+              if(this.echiquier.getPosition(j.getPiece(a)).getLigne()==0){
+                  a++;
+          } else{
+             if(j.getPiece(a).verifierCoupValide(valide.get(c),this.echiquier)){
+                 c++;
+                 test=true;
+             }
+              a++;
+          }
+          if (c==valide.size()){
+            return test;
+          }
+          }
+         if (test == false){
+          return false;
+        }
+        }
+       return true;
+      }
+    return false;
+  }
+
+
+
+  public void sauver(String nomF){
+    try{
+      FileWriter file = new FileWriter(nomF);
+      PrintWriter sortie = new PrintWriter(new BufferedWriter(file));
+      String s = this.affiche() +"\n";
+      // Je stocke les 8 premieres pieces de chaque joueur pour sauvegarder les promotions si il y en a eu
+      for(int i=0;i<8;i++){
+        s+=this.joueur1.getPiece(i).toString()+"\n";
+      }
+      for(int a=0;a<8;a++){
+        s+=this.joueur2.getPiece(a).toString()+"\n";
+      }
+      sortie.print(s);
+      System.out.println("Votre partie a ete sauvegardee");
+      sortie.close();
+    } catch(Exception e){
+      System.out.println(e);
+    }
+  }
+
+  public void charger(String nomF){
+    try{
+      BufferedReader entree;
+      FileReader file = new FileReader(nomF);
+      entree = new BufferedReader(file);
+      String line = entree.readLine();
+      StringTokenizer s=new StringTokenizer(line, ":");
+      line=entree.readLine();
+      StringTokenizer a=new StringTokenizer(line, ":");
+      s.nextToken();
+      Joueur j1=new Joueur("Toto","blanc");
+      j1.setNom(s.nextToken());
+
+      a.nextToken();
+      Joueur j2=new Joueur("Toto","noir");
+      j2.setNom(a.nextToken());;
+      Partie p=new Partie(j1,j2);
+
+      int i=0;
+      int c=0;
+      // Il y a 8 lignes dans le plateau donc c<8
+      while(c<8){
+        line=entree.readLine();
+        a=new StringTokenizer(line, "\t");
+        while(a.hasMoreTokens()){
+          String car=a.nextToken();
+          if (car.length()==3){
+          p.getEchiquier().setCase(i,car);
+          // Je mets le contenu des cases du plateau sauvegarde du fichier de sauvegarde dans le nouvel echiquier
+          }
+          i++;
+          }
+        c++;
+          }
+
+      // Au cas ou il y a eu des promotions, je mets les pieces transormees dans le tableau du joueur
+      //System.out.println(p.getEchiquier());
+      int d=0;
+      int comp=0;
+      while(! line.equals("")){
+        line=entree.readLine();
+        a=new StringTokenizer(line, ":");
+        while (a.hasMoreTokens()){
+        String piece=a.nextToken();
+        if (piece.charAt(0)=='B'){
+          if (piece.charAt(1)=='D'){
+               p.getJoueur1().setPiece(comp,new Dame(piece,a.nextToken()));
+          } else if (piece.charAt(1)=='T'){
+               p.getJoueur1().setPiece(comp,new Tour(piece,a.nextToken()));
+          } else if (piece.charAt(1)=='F'){
+            p.getJoueur1().setPiece(comp,new Fou(piece,a.nextToken()));
+          } else if (piece.charAt(1)=='C'){
+            p.getJoueur1().setPiece(comp,new Cavalier(piece,a.nextToken()));
+          }
+          comp++;
+        } else {
+          if (piece.charAt(1)=='D'){
+               p.getJoueur1().setPiece(d,new Dame(piece,a.nextToken()));
+          } else if (piece.charAt(1)=='T'){
+               p.getJoueur1().setPiece(d,new Tour(piece,a.nextToken()));
+          } else if (piece.charAt(1)=='F'){
+            p.getJoueur1().setPiece(d,new Fou(piece,a.nextToken()));
+          } else if (piece.charAt(1)=='C'){
+            p.getJoueur1().setPiece(d,new Cavalier(piece,a.nextToken()));
+          }
+          d++;
+          }
+      }
+
+      System.out.println("Votre partie a bien ete chargee");
+      entree.close();
+  }
+    }catch(Exception e){
+      System.out.println(e);
+    }
+  }
+
+  public Partie commencerPartie() throws Exception{
+    String[] pseudos=new String[2];
+    System.out.println("Bienvenue dans ce jeu d'echecs ! ");
+    for (int i=0;i<2;i++){
+    System.out.println("Joueur " + (i+1) + " , choisissez un pseudo");
+    Scanner inp=new Scanner(System.in);
+    String pseudo = inp.nextLine();
+    pseudos[i]=pseudo;
+  }
+    System.out.println("Joueur 1 , preferez-vous etre un joueur blanc ou noir ?");
+    Scanner input =new Scanner(System.in);
+    String choixCouleur = input.nextLine();
+    choixCouleur = choixCouleur.toLowerCase();
+    while( ! (choixCouleur.equals("noir")|| choixCouleur.equals("blanc"))){
+      System.out.println("Erreur ! Vous n'avez le choix qu'entre noir et blanc");
+      choixCouleur = input.nextLine();
+      choixCouleur = choixCouleur.toLowerCase();
+    }
+    Joueur j1= new Joueur(pseudos[0],choixCouleur);
+    Joueur j2=new Joueur(pseudos[1],"noir");
+    if (choixCouleur.equals("noir")){
+      j2=new Joueur(pseudos[1],"blanc");
+    }
+    Partie p=new Partie(j1,j2);
+    this.setJoueur1(p.joueur1);
+    this.setJoueur2(p.joueur2);
+    this.setEchiquier(this.creerPartie());
+    System.out.println(this);
+    return this;
+    }
+
+  public String affiche(){
+     String s;
+    s="Joueur blanc : " + this.joueur1.getNom() + "\n Joueur noir : " + this.joueur2.getNom() + " \n" + this.echiquier.affiche();
+    return s;
+  }
+
+  public String toString(){
+    String s;
+    s="Joueur blanc : " + this.joueur1.getNom() + "\n Joueur noir : " + this.joueur2.getNom() + " \n" + this.echiquier;
+    return s;
+  }
+}
