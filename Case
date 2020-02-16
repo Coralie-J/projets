@@ -1,0 +1,49 @@
+public class Case{
+  private int ligne;
+  private int colonne;
+  private String contenu;
+  
+  public Case(){}
+  
+  public Case(int l, int c){
+    this.ligne=l;
+    this.colonne=c;
+    this.contenu="000";
+  }
+  
+  public Case(int l, int c, String c1){
+    this.ligne = l;
+    this.colonne=c;
+    this.contenu = c1;
+  }
+  
+  public int getLigne(){
+    return this.ligne;
+  }
+  
+  public int getColonne(){
+    return this.colonne;
+  }
+  
+  public String getContenu(){
+    return this.contenu;
+  }
+  
+  public void setContenu(String s){
+    this.contenu=s;
+  }
+  
+  public boolean caseLibre(){
+    if (this.contenu.equals("000")){
+      return true;
+    }
+    return false;
+  }
+
+  public String toString(){
+    String s;
+    s = "Ligne : " + this.ligne  + " Colonne : " + this.colonne + " Contenu : " + this.contenu;
+    return s;
+  }
+}
+  
