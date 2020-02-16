@@ -1,0 +1,59 @@
+public abstract class Piece{
+  protected String nom;
+  protected String couleur;
+
+  public Piece(){
+  }
+
+  public Piece(String unNom, String uneCouleur){
+    this.nom=unNom.toUpperCase();
+    this.couleur = uneCouleur.toLowerCase();
+  }
+
+  public Piece(Piece p){
+    this.nom=p.nom;
+    this.couleur=p.couleur;
+  }
+
+  public String getCouleur(){
+    return this.couleur;
+  }
+
+  public String getNom(){
+    return this.nom;
+  }
+
+  public void setNom(String nouv){
+    this.nom=nouv;
+  }
+
+  public void setCouleur(String nouvelleCouleur){
+    try{
+      if (! nouvelleCouleur.equals("noir") || ! nouvelleCouleur.equals("blanc")){
+        throw new Exception("Couleur non valide");
+      }
+    this.couleur=nouvelleCouleur;
+    } catch(Exception e){
+      System.out.println(e);
+  }
+  }
+
+  public void seDeplacer(Case c, Plateau p1){
+      Case ancienne = p1.getPosition(this);
+      int nouv = 8*(c.getLigne()-1) + (c.getColonne()-1);
+      int anc = 8*(ancienne.getLigne()-1)+ (ancienne.getColonne()-1);
+      if (this.mangePionAdverse(c,p1) || this.verifierCoupValide(c,p1)){
+        p1.setCase(nouv,this);
+        p1.setCase(anc,"000");
+    }
+  }
+
+  public abstract boolean verifierCoupValide(Case vise, Plateau p1);
+
+  public abstract boolean mangePionAdverse(Case dep, Plateau p);
+
+  public String toString(){
+    String s = "Couleur : " + this.couleur + "  Nom : " + this.nom;
+    return s;
+  }
+}
