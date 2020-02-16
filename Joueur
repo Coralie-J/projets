@@ -1,0 +1,214 @@
+import java.util.Scanner;
+
+public class Joueur{
+  private String nom;
+  private String couleur;
+  private Piece[] pieces;
+  private int nbCoups;
+  private static int i=3;
+ 
+  public Joueur(){
+    this.nom="Toto";
+    this.couleur="blanc";
+    this.pieces = new Piece[16];
+    this.nbCoups=0;
+  }
+     
+  public Joueur(String nom,String uneCouleur){
+        this.nom =nom;
+        this.couleur=uneCouleur;
+        this.nbCoups=0;
+        this.pieces = new Piece[16];
+        String prim="N";
+        if(this.couleur.equals("blanc")){
+          prim="B";
+        }
+        Tour t1=new Tour(prim+"T1",this.couleur);
+        Tour t2=new Tour(prim+"T2",this.couleur);
+        Fou f1 = new Fou(prim+"F1",this.couleur);
+        Fou f2 = new Fou(prim+"F2",this.couleur);
+        Cavalier c1=new Cavalier(prim+"C1",this.couleur);
+        Cavalier c2=new Cavalier(prim+"C2",this.couleur);
+        Dame d=new Dame(prim+"D1",this.couleur);
+        Roi r=new Roi(prim+"R1",this.couleur);
+        for(int a=0;a<8;a++){
+          this.pieces[a]=new Pion(prim+"P"+(a+1), this.couleur);
+        }
+        this.pieces[8]=t1;
+        this.pieces[15]=t2;
+        this.pieces[10]=f1;
+        this.pieces[13]=f2;
+        this.pieces[9]=c1;
+        this.pieces[14]=c2;
+        this.pieces[11]=d;
+        this.pieces[12]=r;
+      }
+  
+  public Piece[] getPieces(){
+    return this.pieces;
+ }
+
+  public Piece getPiece(int indice){
+    return this.pieces[indice];
+  }
+
+
+  public String getNom(){
+    return this.nom;
+  }
+
+  public String getCouleur(){
+    return this.couleur;
+  }
+
+  public void setNom(String nom){
+    this.nom=nom;
+  }
+
+  public void setCouleur(String coul){
+    this.couleur=coul;
+  }
+  
+  public int getNbCoups(){
+    return this.nbCoups;
+  }
+  
+  public void setPiece(int i,Piece p){
+    this.pieces[i] = p;
+  }
+  
+  public String toString(){
+    String s="Nom du joueur : " + this.nom + "  Couleur : "+ this.couleur+ "\n Ses pieces sont : \n";
+    if (this.pieces.length!=0){ 
+   for(int z=0;z<this.pieces.length;z++){
+      s+=this.pieces[z].toString()+"\n";
+    }
+    }
+    return s;
+    }
+  
+  public int trouvePiece(Piece p){
+    for(int i=0;i<16;i++){
+      if (this.pieces[i].equals(p)){
+        return i;
+      }
+    }
+    return -1;
+  }
+  
+  
+  // La fonction transformerPion permet de transformer un pion qui est en promotion en autres pièces
+  
+  public Piece transformerPion(){
+    Scanner input=new Scanner(System.in);
+    System.out.println("En quelle pièce voulez-vous le transformer ?");
+    String choix = input.nextLine();
+    choix = choix.toLowerCase();
+    while (!(choix.equals("tour") || choix.equals("dame") || choix.equals("cavalier") ||  choix.equals("fou"))) {
+      System.out.println("Erreur. Recommencez ");
+      choix = input.nextLine();
+      choix = choix.toLowerCase();
+    }
+
+    char[] char_table = this.couleur.toCharArray();
+    char prim=Character.toUpperCase(char_table[0]);
+    Piece p;
+    if (choix.equals("tour")){
+      p=new Tour(prim + "T"+i, this.couleur);
+      i++;
+      } else if (choix.equals("dame")){
+        int j=2;
+        p = new Dame(prim + "D"+j, this.couleur);
+        j++;
+      } else if(choix.equals("cavalier")){
+        p=new Cavalier (prim + "C"+i, this.couleur);
+        i++;
+      } else{
+        p= new Fou (prim + "F"+i, this.couleur);
+        i++;
+      }
+      input.close();
+      System.out.println("Votre nouvelle pièce s'appelle " + p.getNom());
+      return p;
+  }
+  
+  // La fonction promotion vérifie si les pions du joueur sont en promotion
+
+  public Pion promotion(Plateau p){
+    Pion[] pions=new Pion[8];
+    for(int j=0;j<8;j++){
+      pions[j]=(Pion) this.pieces[j];
+      if (pions[j].promoPion(p)){
+        return (Pion) this.pieces[j];
+      }
+    }
+    return null;
+  }
+  
+  // La fonction pieceExiste vérifie si la pièce que le joueur veut jouer existe ou n'a pas été mangé
+  
+  public Piece pieceExiste(String n){
+    for(int i=0;i<16;i++){
+      if (this.pieces[i].getNom().equals(n)){
+        return this.pieces[i];
+      }
+    }
+    return new Pion();
+  }
+
+  public String jouerCoup(Partie p) throws Exception{
+    Scanner input=new Scanner(System.in);
+    System.out.println("Quelle piece voulez-vous deplacer ? Pour accéder au menu principal, tapez M");
+    String nom=input.nextLine();
+    nom=nom.toUpperCase();
+     if(nom.equals("M")){
+        p.menu();
+        return nom;
+      }
+     Piece essai=this.pieceExiste(nom);
+     
+     while(essai.equals(null) || p.getEchiquier().getPosition(essai).getLigne()==0){
+       System.out.println("La pièce saisie est inexistante ou cette pièce a été mangé. Réessayez");
+       nom=input.nextLine();
+       nom=nom.toUpperCase();
+     }
+     
+    for(int i=0;i<16;i++){
+      if(this.pieces[i].getNom().equals(nom)){
+        System.out.println("Dans quelle case, voulez-vous la deplacer ? Exemple : h7");
+        String saisie=input.nextLine();
+        String erreur="Erreur";
+        Case choix=p.getEchiquier().trouveCase((int)saisie.charAt(1)-48,saisie.charAt(0));
+        while(saisie.length()<2 || choix.getLigne()==0){
+          System.out.println("Case inexistante. Ressayez");
+          saisie=input.nextLine();
+          choix=p.getEchiquier().trouveCase((int)saisie.charAt(1)-48,saisie.charAt(0));
+        }
+        
+        while (! this.pieces[i].mangePionAdverse(choix,p.getEchiquier()) && ! this.pieces[i].verifierCoupValide(choix,p.getEchiquier())){
+          System.out.println("Mouvement invalide. Ressayez");
+          saisie=input.nextLine();
+          choix=p.getEchiquier().trouveCase((int)saisie.charAt(1)-48,saisie.charAt(0));
+        }
+        this.pieces[i].seDeplacer(choix,p.getEchiquier());
+              if (p.verifierMat(this)){
+                   System.out.println("Echecs et mat ! " + this.nom + " a gagné");
+                   return "Mat";
+               } else if(p.verifierPat(this)){
+                   System.out.println("Pat, la partie est nulle");
+                   return "Pat";
+               } else if (this.pieces[i] instanceof Pion){
+                  Pion test;
+                  test =(Pion)this.pieces[i];
+                  if (test.promoPion(p.getEchiquier())){
+                      p.getEchiquier().setPromotion(this);
+               }
+             }
+             this.nbCoups++;
+             return nom;
+    }
+  } 
+    return nom;
+  }
+       
+}
