@@ -1,0 +1,121 @@
+import os
+from Partie2 import*
+from os import system
+from json import loads,dumps
+
+
+def creer_partie(n):
+    assert n==6 or n==4 or n==8
+    partie={"joueur":1, "plateau":creer_plateau(n)}
+    return partie
+#Crée une partie    
+    
+	
+def creer_tab(plateau):
+    t=[]
+    i=0
+    a=ord("a")
+    while i<plateau["n"]:
+        t.append(chr(a))
+        a+=1
+        i+=1
+    return t
+
+# Crée un tableau de n élements avec les lettres de l'alphabet 
+ 
+def saisie_valide(partie,s):
+    if not s=="":
+        if len(s)==1:
+            if s=="M":
+                return True
+            return False
+        
+        if (int(s[1])<=partie["plateau"]["n"] and int(s[1])>0) and s[0] in creer_tab(partie["plateau"]):
+            return True
+        return False
+    else:
+        return False
+
+#Retourne True si la chaîne s correspond à un mouvement valide pour le joueur.
+#La chaine est valide si elle correspond M ou à une case de la forme a1 pour la case (0,0) etc où le joueur peut poser son pion.
+
+def tour_jeu(partie):
+    print("Joueur " + str(partie["joueur"]) + " veuillez saisir un mouvement ou M si vous souhaitez accèder au menu principal ")
+    choix=input()
+    while not (saisie_valide(partie,choix)):
+        choix=input()
+        
+    if choix!="M" and saisie_valide(partie,choix): 
+        p=creer_tab(partie["plateau"])
+        indice=p.index(choix[0])
+        j=int(choix[1])-1
+        mouvement(partie["plateau"],indice,j,partie["joueur"])
+        return True
+    return False
+
+#Effectue un tour de jeu, efface le terminal, affiche le plateau si le joueur courant peut jouer, effectue la saisie d'un mouvement valide(saisie contrôlée)
+#Effectue le mouvement sur le plateau de jeu
+#Retourne True si le joueur courant a joué ou False s'il souhaite accéder au menu principal.
+
+def effacer_terminal():
+    system('cls')
+    
+# Efface le terminal
+
+def jouer(partie):
+    if not fin_de_partie(partie["plateau"]):
+        return True
+    else:
+        return False
+
+#Permet de jouer à la partie si elle est en cours
+		
+def saisir_taille_plateau():
+    nb=0
+    while not (nb==4 or nb==6 or nb==8):
+        print(("Veuillez saisir la taille de votre plateau soit 4 soit 6 soit 8"))
+        nb=int(input())
+    return nb
+
+#Permet de choisir la taille du plateau de jeu
+
+
+def sauvegarder_partie(partie):
+    sauvegarde=open("sauvegarde.json","w")
+    s=dumps(partie)
+    sauvegarde.write(s)
+    sauvegarde.close()
+    print("Votre partie a bien été sauvegardé")
+
+#Sauvegarde la partie
+
+def charger_partie():
+    if os.path.exists("sauvegarde.json"):
+        sauvegarde=open("sauvegarde.json","r")
+        lecture=sauvegarde.read()
+        sauvegarde.close()
+        data=loads(lecture)
+        return data
+    else:
+        print("Désolé ! Le fichier de sauvegarde n'existe pas.")		
+
+#Charge la partie
+
+def saisir_action(partie):
+    choix=8
+    while not(choix==0 or choix==1 or choix==2 or choix==3 or choix==4):
+        print("Que voulez-vous faire ? ")
+        choix=int(input())
+        
+    if choix==1:
+        n=saisir_taille_plateau()
+        return(creer_partie(n))
+    elif choix==0:
+        return(gagnant(partie["plateau"]))
+        effacer_terminal()
+    elif choix==2:
+        return(charger_partie())
+    elif choix==3 and not fin_de_partie(partie["plateau"]):
+        return(sauvegarder_partie(partie))
+    elif choix==4 and not fin_de_partie(partie["plateau"]):
+        print(jouer(partie))
