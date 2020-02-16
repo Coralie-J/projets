@@ -1,0 +1,54 @@
+def creer_cases(n):
+    assert n==4 or n==6 or n==8
+    cases=[]
+    i=0
+    noir2=(((n**2)-1)//2)+(n/2)
+    noir1=noir2-(n-1)
+    while i<n**2:
+        if i==noir2 or i==noir1:
+            cases.append(1)
+        elif i==noir1-1 or i==noir2+1 :
+            cases.append(2)
+        else:
+            cases.append(0)
+        i+=1
+    return cases
+
+
+
+def creer_plateau(n):
+    cases=creer_cases(n)
+    plateau={"cases":cases,"n":n}
+    return plateau
+    
+
+
+def affiche_plateau(plateau):
+    ligne=""
+    i=0
+    j=1
+    while i<len(plateau["cases"]):
+        if i<(j*plateau["n"])-1:
+            ligne+=str(plateau["cases"][i])+ " "
+        else:
+            ligne+=str(plateau["cases"][i])
+            print(ligne)
+            ligne=""
+            j+=1
+        i+=1
+        
+
+def indice_valide(plateau,indice):
+    assert isinstance(indice,int)
+    taille= plateau["n"]
+    return indice<taille
+    
+
+def case_valide(plateau,i,j):
+    a=indice_valide(plateau,i)
+    b=indice_valide(plateau,j)
+    return a and b
+    
+
+               
+  
