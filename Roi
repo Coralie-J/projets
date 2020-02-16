@@ -1,0 +1,66 @@
+public class Roi extends Piece {
+
+  public Roi(){
+   super();
+  }
+  public Roi(String nom, String couleur) {
+   super(nom,couleur);
+  }
+
+  public Roi(Roi r ) {
+   super(r);
+  }
+
+  public  boolean verifierCoupValide(Case vise,Plateau e ){
+   // le Roi se deplace dans toutes les directions, donc diagonales et horizontale/verticale mais seulement de 1 en 1
+   Case pos_actuel = e.getPosition(this);//ma position actuel
+   int col=pos_actuel.getColonne(); //la ligne de la position actuel
+   int ligne= pos_actuel.getLigne(); //la colnne de la position actuel
+   int colvise = vise.getColonne(); //la colonne de ma case vise
+   int lignevise =vise.getLigne();//la ligne de ma case vise
+   if( vise.caseLibre()){
+     if(colvise == col+1  && (lignevise == ligne+1 || lignevise== ligne-1) && col !=8){
+      //la colonnevise == ma position actuel +1pour la colonne et la position de ma colonne est different de 8(car c'est les cotes) et ligne ==position +1pour la ligne
+        return true;//donc ca mange
+     }
+     else if (colvise ==col-1 && ( lignevise == ligne+1 || lignevise== ligne-1 ) && col!=1){
+       //la colonnevise == ma position actuel -1pour la colonne et la position de ma colonne est different de 1(car c'est les cotes) et ligne ==position -1pour la ligne
+        return true;//donc je mange
+     }
+     else if (col == colvise && (ligne == lignevise+1 || ligne == lignevise-1)){
+       //on est sur la meme colonne, deplacement en colonne vers le haut et vert le bas
+        return true;
+     }
+     else if(ligne == lignevise && (col == colvise+1 || col == colvise-1)){
+         return true;
+     }
+     }
+    return false;
+   }//de la methode
+
+
+
+  public boolean mangePionAdverse(Case aMange, Plateau e){
+   Case pos_actuel = e.getPosition(this);//ma position actuel
+   int col=pos_actuel.getColonne(); //la ligne de la position actuel
+   int ligne= pos_actuel.getLigne(); //la colnne de la position actuel
+   int colvise = aMange.getColonne(); //la colonne de ma case vise
+   int lignevise =aMange.getLigne();//la ligne de ma case vise
+   if( ! aMange.caseLibre() && this.couleur.equals("noir") && aMange.getContenu().charAt(0)!='N' || this.couleur.equals("blanc") && aMange.getContenu().charAt(0)!='B'  ){
+     if (col == colvise && (ligne == lignevise+1 || ligne == lignevise-1)){
+       //on est sur la meme colonne, deplacement en colonne vers le haut et vert le bas
+        return true;
+     }
+     else if(ligne == lignevise && (col == colvise+1 || col == colvise-1)){
+        return true;
+     }
+     else if(colvise == col+1  && lignevise == ligne+1 && col !=8){
+        return true;//donc ca mange
+     }
+     else if (colvise ==col-1 && lignevise == ligne+1 && col!=1){
+        return true;//donc je mange
+     }
+     }
+    return false;
+   }
+}//Fin de la classe Roi
