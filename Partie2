@@ -1,3 +1,5 @@
+from Plateau import*
+
 def pion_adverse(joueur):
 	if joueur==1 or joueur==2
                 if joueur==1:
