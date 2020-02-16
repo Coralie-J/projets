@@ -1,0 +1,46 @@
+public class Dame extends Piece{
+
+  public Dame() {
+  super();
+  }
+
+   public Dame(String nom,String couleur){
+    super(nom,couleur);
+  }
+
+
+  public Dame(Dame d) {
+   super(d);
+  }
+
+ public boolean verifierCoupValide(Case vise,Plateau e){
+    int ligne=e.getPosition(this).getLigne();
+    int colonne=e.getPosition(this).getColonne();
+    int x = Math.abs(e.getPosition(this).getLigne()-vise.getLigne());
+    int y = Math.abs(e.getPosition(this).getColonne()-vise.getColonne());
+     if (vise.caseLibre() && (ligne == vise.getLigne() || colonne == vise.getColonne())){
+       return true;
+     }else if(x == y){
+    return true;
+   }
+   return false;
+  }
+
+
+   public boolean mangePionAdverse(Case aMange,Plateau e) {
+     int ligneP=e.getPosition(this).getLigne();
+     int colonneP=e.getPosition(this).getColonne();
+     char a = this.nom.charAt(0);
+     int x = Math.abs(e.getPosition(this).getLigne()-aMange.getLigne());
+     int y = Math.abs(e.getPosition(this).getColonne()-aMange.getColonne());
+     if (! aMange.caseLibre() && (aMange.getContenu().charAt(0) != a)){
+        if (ligneP == aMange.getLigne() || colonneP == aMange.getColonne()){
+          return true;
+        } else if(x==y){
+          return true;
+       }
+     }
+    return false;
+  }
+
+}
