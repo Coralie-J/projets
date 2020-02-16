@@ -1,0 +1,44 @@
+public class Cavalier extends Piece{
+
+  public Cavalier(){
+    super();
+  }
+
+  public Cavalier(Cavalier c){
+    super(c);
+  }
+
+  public Cavalier(String unNom,String uneCouleur){
+    super(unNom,uneCouleur);
+  }
+
+  public boolean verifierCoupValide(Case visee, Plateau p1){
+    if (visee.caseLibre() && ! visee.equals(null) && ! p1.getPosition(this).equals(null)){
+       int ligneP=p1.getPosition(this).getLigne();
+       int colonneP=p1.getPosition(this).getColonne();
+       int col_visee=visee.getColonne();
+       int lig_visee=visee.getLigne();
+       if ((col_visee == colonneP-1 || col_visee == colonneP+1) && (lig_visee == ligneP+2 || lig_visee == ligneP-2 )) {
+         return true;
+       } else if ((col_visee == colonneP+2 || col_visee == colonneP-2) && (lig_visee == ligneP+1 || lig_visee == ligneP-1)){
+         return true;
+       }
+    }
+     return false;
+  }
+
+    public boolean mangePionAdverse(Case dep, Plateau p1){
+       int ligneP=p1.getPosition(this).getLigne();
+       int colonneP=p1.getPosition(this).getColonne();
+       int col_visee=dep.getColonne();
+       int lig_visee=dep.getLigne();
+        if (!dep.caseLibre() && dep.getContenu().charAt(0)!=this.nom.charAt(0)){
+       if ((col_visee == colonneP-1 || col_visee == colonneP+1) && (lig_visee == ligneP+2 || lig_visee == ligneP-2 )) {
+         return true;
+       } else if ((col_visee == colonneP+2 || col_visee == colonneP-2) && (lig_visee == ligneP+1 || lig_visee == ligneP-1)){
+         return true;
+       }
+    }
+      return false;
+    }
+}
