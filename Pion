@@ -1,0 +1,65 @@
+public class Pion extends Piece{
+
+  public Pion(){
+    super();
+  }
+
+  public Pion(String nom,String couleur){
+    super(nom,couleur);
+  }
+
+  public boolean verifierCoupValide(Case vise, Plateau p1){
+    Case mon_pion = p1.getPosition(this);
+    int col=vise.getColonne();
+    int lig=vise.getLigne();
+     if ( vise.caseLibre() && ! vise.equals(null) && ! mon_pion.equals(null)){
+      if (this.couleur.equals("noir") && mon_pion.getColonne() == col && lig == mon_pion.getLigne()+1 ){
+          return true;
+      } else if ( this.couleur.equals("noir") && col==mon_pion.getColonne() && mon_pion.getLigne()==2 && lig == mon_pion.getLigne()+2){
+        return true;
+      }
+       else if(this.couleur.equals("blanc") && col == mon_pion.getColonne() && lig == mon_pion.getLigne()-1){
+        return true;
+       } else if (this.couleur.equals("blanc") && col == mon_pion.getColonne() && mon_pion.getLigne() ==7 && lig == mon_pion.getLigne()-2){
+         return true;
+       }
+     }
+      return false;
+        }
+
+
+
+  public boolean mangePionAdverse(Case dep, Plateau p){
+    Case position = p.getPosition(this);
+    char a = dep.getContenu().charAt(0);
+    int col=dep.getColonne();
+    int lig=dep.getLigne();
+    if (this.couleur.equals("noir") &&  (a!='N') && ! dep.caseLibre()){
+        if (col==position.getColonne()+1 && position.getColonne() !=8 && lig == position.getLigne()+1){
+          return true;
+        } else if (col==position.getColonne()-1 && lig == position.getLigne()+1 && position.getColonne()!=1){
+          return true;
+        }
+    }else if (this.couleur.equals("blanc") && (a!='B') && ! dep.caseLibre()){
+      if (position.getColonne()!=8 && col==position.getColonne()+1 && lig ==position.getLigne()-1){
+        return true;
+      } else if (position.getColonne()!=1 && lig ==position.getLigne()-1 && col==position.getColonne()-1){
+        return true;
+        }
+    }
+    return false;
+
+  }
+
+// La fonction promoPion renvoie true si le pion qui appelle cette fonction permet une promotion sinon false
+
+  public boolean promoPion(Plateau p){
+    Case posi=p.getPosition(this);
+    if (this.couleur.equals("noir") && posi.getLigne()==8){
+      return true;
+    } else if( this.couleur.equals("blanc") && posi.getLigne()==1){
+      return true;
+    }
+    return false;
+  }
+}
