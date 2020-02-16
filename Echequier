@@ -1,0 +1,111 @@
+public class Plateau{
+  private Case[] cases;
+
+    public Plateau(){
+      this.cases=new Case[64];
+      int i=0;
+      int j=1;
+      int c=1;
+      while (i<64){
+        while (c<9){
+          this.cases[i]=new Case(j,c);
+          c++;
+          i++;
+        }
+         j++;
+         c=1;
+      }
+       }
+
+    public Plateau(Plateau p1){
+      this.cases=new Case[64];
+      this.cases=p1.cases;
+    }
+
+    public Case getCase(int i){
+      if(i<64){
+        return this.cases[i];
+     }
+      return new Case();
+    }
+
+
+    public int trouveIndice(Case c){
+      int i=0;
+      while (i<64){
+        if (this.cases[i].getLigne() == c.getLigne() && this.cases[i].getColonne() == c.getColonne()){
+          return i;
+        }
+        i++;
+    }
+      return -1;
+    }
+
+
+   public Case trouveCase(int li,char colonne){
+      int col = (int) colonne - ((int)'a' -1); 
+      int a=0;
+      while(a<64){
+        if(this.cases[a].getLigne() == li && this.cases[a].getColonne()==col){
+          return this.cases[a];
+        }
+        a++;
+      }
+      return new Case();
+    }
+
+    public Case[] getPlateau(){
+      return this.cases;
+    }
+
+    public void setCase(int i,Piece p){
+      this.cases[i].setContenu(p.getNom());
+    }
+
+    public void setCase(int i, String s){
+      this.cases[i].setContenu(s);
+    }
+
+    public Case getPosition(Piece p){
+      int i=0;
+      while (i<this.cases.length){
+        if (this.cases[i].getContenu().equals(p.getNom())){
+          return this.cases[i];
+            }
+        i++;
+      }
+      return new Case();
+    }
+
+     private static String traceEtoiles(){
+          String ligne_etoile="";
+          int i=1;
+          while (i<66){
+            ligne_etoile+="*";
+            i++;
+        }
+          return ligne_etoile;
+        }
+
+    public String toString(){
+      int i=0;
+      int j=1;
+      String ligne="\t a\t b \t c \t d \t e \t f \t g\t   h\n      "+ Plateau.traceEtoiles() +"\n"+j+"     *";
+      while (i<64){
+        if (i<(j*8)-1){
+        ligne = ligne+ "\t " + this.getCase(i).getContenu();
+        } else {
+          ligne = ligne + "\t " + this.getCase(i).getContenu() +"  *\t"+ j + "\n      *\t\t\t\t\t\t\t\t      *\n";
+          j++;
+          if(j!=9){
+          ligne = ligne +"      *\t\t\t\t\t\t\t\t      *\n"+j +"     *";
+        }
+        }
+        i++;
+      }
+      ligne+="       \t a\t b \t c \t d \t e \t f \t g\t   h\n"+ Plateau.afficheCoord();
+      return ligne;
+
+    }
+
+}
