@@ -1,0 +1,39 @@
+public class Fou extends Piece {
+
+ public Fou(){
+  super();
+ }
+
+  public Fou(String nom,String couleur){
+    super(nom,couleur);
+  }
+
+ public Fou(Fou f) {
+  super(f);
+ }
+
+ public boolean verifierCoupValide(Case vise,Plateau e){
+  int X = Math.abs(e.getPosition(this).getLigne()-vise.getLigne());
+  int Y = Math.abs(e.getPosition(this).getColonne()-vise.getColonne());
+  if(vise.caseLibre()){
+   if(X == Y) {
+    return true;
+   }
+  }
+  return false;
+ }
+
+
+ public boolean mangePionAdverse(Case aMange,Plateau e) {
+  if( ! aMange.caseLibre() && this.couleur.equals("noir") && aMange.getContenu().charAt(0)!='N' || this.couleur.equals("blanc") && aMange.getContenu().charAt(0)!='B'){
+   int X = Math.abs(e.getPosition(this).getLigne()-aMange.getLigne());
+   //ca me donne la position actuel, de ma ligne
+   int Y = Math.abs(e.getPosition(this).getColonne()-aMange.getColonne());
+    if(X == Y) {
+     return true;
+    }
+ }
+  return false;
+ }
+  
+}
