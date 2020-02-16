@@ -1,0 +1,17 @@
+public class TestPartie{
+  public static void main(String[] args){
+    try{
+      Partie p=new Partie();
+      p.commencerPartie();
+      int i=0;
+      String reponse="";
+      while (! reponse.equals("M") && ! p.verifierMat(p.getJoueur1()) && ! p.verifierPat(p.getJoueur1()) && ! p.verifierMat(p.getJoueur2()) && ! p.verifierPat(p.getJoueur2())){;
+            reponse = p.alternanceCoup(i).jouerCoup(p);
+            System.out.println(p.getEchiquier());
+            i++;
+            }
+    } catch(Exception e){
+      System.out.println(e);
+    }
+  }
+}
