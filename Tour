@@ -1,0 +1,32 @@
+public class Tour extends Piece{
+  public Tour(){
+    super();
+  }
+
+  public Tour(String nom,String couleur){
+    super(nom,couleur);
+  }
+
+  public Tour(Tour t){
+    super(t);
+  }
+
+  public boolean verifierCoupValide(Case vise, Plateau p1){
+    int ligneP=p1.getPosition(this).getLigne();
+    int colonneP=p1.getPosition(this).getColonne();
+    if (vise.caseLibre() && (ligneP == vise.getLigne() || colonneP == vise.getColonne())){
+      return true;
+    } return false;
+  }
+
+  public boolean mangePionAdverse(Case dep, Plateau p1){
+    char a = this.nom.charAt(0);
+    int ligneP=p1.getPosition(this).getLigne();
+    int colonneP=p1.getPosition(this).getColonne();
+    if (! dep.caseLibre() && (dep.getContenu().charAt(0) != a) && (ligneP == dep.getLigne()) || colonneP == dep.getColonne()){
+      return true;
+  }
+    return false;
+  }
+
+  }
